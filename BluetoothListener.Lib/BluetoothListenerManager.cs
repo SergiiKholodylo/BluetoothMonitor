@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.UI.Core;
 
@@ -13,12 +14,12 @@ namespace BluetoothListener.Lib
     {
         private readonly ObservableCollection<BeaconDevice> _devices;
         private readonly CoreDispatcher _dispatcher;
-        private readonly BluetoothReceiver _bluetoothDevice;
-        private int _packagesReceived = 0;
-        private int _packagesDropped = 0;
+        private readonly IBluetoothReceiver _bluetoothDevice;
+        private int _packagesReceived;
+        private int _packagesDropped;
 
 
-        static bool _busy = false;
+        private static bool _busy;
 
         public BluetoothListenerManager(ObservableCollection<BeaconDevice> devices, CoreDispatcher dispatcher)
         {
@@ -34,16 +35,21 @@ namespace BluetoothListener.Lib
             if (_busy)
             {
                 _packagesDropped++;
-                Debug.WriteLine($"A Package was Dropped {_packagesDropped} from {_packagesReceived} ({_packagesDropped/_packagesReceived*100}%)");
+                Debug.WriteLine($"A Package was Dropped {_packagesDropped} from {_packagesReceived} ({_packagesDropped * 100.0 / (1.0 * _packagesReceived) }%)");
                 return;
             }
 
-            var beacon = BeaconConverter.ToBeaconPackage(args);
+            var beacon = BeaconBuilder.CreateBeaconDeviceFromBleAdvertisement(args);
 
-            if (beacon.Packages.Count == 0) return;
+            if (beacon.NumberOfPackages() == 0) return;
 
-            if (beacon.Rssi == -127) return;
+            if (beacon.RssiOutOfRange()) return;
 
+            await InsertOrReplaceBeaconInCollection(beacon);
+        }
+
+        private async Task InsertOrReplaceBeaconInCollection(BeaconDevice beacon)
+        {
             try
             {
                 _busy = true;
@@ -51,7 +57,7 @@ namespace BluetoothListener.Lib
                 var index = _devices.IndexOf(alreadyExist);
                 if (index >= 0)
                 {
-                    MovePackagesToNewBeacon(alreadyExist, beacon);
+                    beacon.CopyUniquePackagesFrom(alreadyExist);
                     await _dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                     {
                         _devices.Remove(alreadyExist);
@@ -63,23 +69,9 @@ namespace BluetoothListener.Lib
                 });
 
             }
-            finally {
-                _busy = false;
-            }
-        }
-
-        private static void MovePackagesToNewBeacon(BeaconDevice alreadyExist, BeaconDevice beacon)
-        {
-            var newPackagesType = new Dictionary<Type, string>();
-
-            foreach (var package in beacon.Packages)
+            finally
             {
-                var newType = package.GetType();
-                if (!newPackagesType.ContainsKey(newType)) newPackagesType.Add(newType, "");
-            }
-            foreach (var package in alreadyExist.Packages) {
-                if (!newPackagesType.ContainsKey(package.GetType()))
-                    beacon.Packages.Add(package);
+                _busy = false;
             }
         }
 

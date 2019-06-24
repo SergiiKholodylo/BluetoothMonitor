@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using BluetoothListener.Lib.Packages;
 
 namespace BluetoothListener.Lib
 {
     public class BeaconDevice
     {
-        public List<BeaconPackage> Packages = new List<BeaconPackage>();
+
+
+        protected List<BeaconPackage> Packages = new List<BeaconPackage>();
         public short Rssi { set; get; }
         public ulong BluetoothAddress { set; get; }
 
@@ -54,6 +58,37 @@ namespace BluetoothListener.Lib
             Rssi = rssi;
             Timestamp = timeOffset;
 
+        }
+
+        public int NumberOfPackages()
+        {
+            return Packages.Count;
+        }
+
+        public bool RssiOutOfRange()
+        {
+            return Rssi == -127;
+        }
+
+        public void AddPackage(BeaconPackage package)
+        {
+            Packages.Add(package);
+        }
+
+        public void CopyUniquePackagesFrom(BeaconDevice source)
+        {
+            var newPackagesType = new Dictionary<Type, string>();
+
+            foreach (var package in Packages)
+            {
+                var newType = package.GetType();
+                if (!newPackagesType.ContainsKey(newType)) newPackagesType.Add(newType, "");
+            }
+            foreach (var package in source.Packages)
+            {
+                if (!newPackagesType.ContainsKey(package.GetType()))
+                    AddPackage(package);
+            }
         }
     }
 }

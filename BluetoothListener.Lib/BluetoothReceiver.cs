@@ -2,13 +2,12 @@
 using Windows.Devices.Bluetooth.Advertisement;
 
 namespace BluetoothListener.Lib
-{
-
-    public delegate void AdvertisementReceivedHandler(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args);
-    public class BluetoothReceiver
+{   
+    public class BluetoothReceiver: IBluetoothReceiver
 
     {
         private readonly BluetoothLEAdvertisementWatcher _watcher;
+
         private bool _isListening;
 
         public event AdvertisementReceivedHandler AdvertisementReceived;
@@ -16,6 +15,25 @@ namespace BluetoothListener.Lib
         public BluetoothReceiver()
         {
             _watcher = CreateWatcherWithSettings();
+        }
+
+        public void StartListening()
+        {
+            if (_isListening) return;
+
+            SubscribeHandlers();
+
+            _watcher.Start();
+
+            _isListening = true;
+        }
+        public void StopListening()
+        {
+            if (!_isListening) return;
+
+            _watcher.Stop();
+            UnsubscribeHandlers();
+            _isListening = false;
         }
 
         protected BluetoothLEAdvertisementWatcher CreateWatcherWithSettings()
@@ -39,33 +57,21 @@ namespace BluetoothListener.Lib
             //watcher.AdvertisementFilter.Advertisement.ManufacturerData.Add(manufacturerData);
         }
 
-        public void StartListening()
+        private void UnsubscribeHandlers()
         {
-            if(_isListening) return;
-
-            _watcher.Received += OnAdvertisementReceived;
-            _watcher.Stopped += OnAdvertisementWatcherStopped;
-            _watcher.Start();
-
-            _isListening = true;
-        }
-
-        public void StopListening()
-        {
-            if(!_isListening) return;
-
-            _watcher.Stop();
             _watcher.Received -= OnAdvertisementReceived;
             _watcher.Stopped -= OnAdvertisementWatcherStopped;
-
-            _isListening = false;
         }
-
+        private void SubscribeHandlers()
+        {
+            _watcher.Received += OnAdvertisementReceived;
+            _watcher.Stopped += OnAdvertisementWatcherStopped;
+        }
         private void OnAdvertisementWatcherStopped(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementWatcherStoppedEventArgs args)
         {
-            
+            _isListening = false;
+            UnsubscribeHandlers();
         }
-
         private void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
             AdvertisementReceived?.Invoke(sender,args);

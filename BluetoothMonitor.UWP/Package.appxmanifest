@@ -7,15 +7,15 @@
   IgnorableNamespaces="uap mp">
 
   <Identity
-    Name="34da9475-5279-4382-9841-f89a6711cb13"
+    Name="BluetoothMonitor"
     Publisher="CN=c00pe"
-    Version="1.0.0.0" />
+    Version="1.1.28.0" />
 
   <mp:PhoneIdentity PhoneProductId="34da9475-5279-4382-9841-f89a6711cb13" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
     <DisplayName>BluetoothMonitor.UWP</DisplayName>
-    <PublisherDisplayName>c00pe</PublisherDisplayName>
+    <PublisherDisplayName>c00per</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
 
@@ -32,12 +32,12 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="BluetoothMonitor.UWP.App">
       <uap:VisualElements
-        DisplayName="BluetoothMonitor.UWP"
+        DisplayName="Bluetooth Monitor"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="BluetoothMonitor.UWP"
         BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" ShortName="Ble Monitor" Square71x71Logo="Assets\SmallTile.png" Square310x310Logo="Assets\LargeTile.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
     </Application>
