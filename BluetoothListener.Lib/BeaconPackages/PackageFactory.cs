@@ -4,12 +4,18 @@ using System.Diagnostics;
 
 namespace BluetoothListener.Lib.Packages
 {
+    /* Eddystone package format -  https://github.com/google/eddystone */
+
     public class PackageFactory
     {
         private const int EddystoneMinHeaderSize = 4;
         private const int BeaconUuidMinSize = 0x15;
         private const int EddystoneIdMinSize = 0x14;
         private const int EddystonePackageDataOffset = 0x04;
+        private const int EddystoneTlmPackageSize = 0x10;
+        private const int EddystoneEidPackageSize = 0x0C;
+
+        private const int EncryptedEddystoneTlm = 0x01;
 
         public static BeaconPackage CreatePackageFromManufacturerPayload(byte[] data)
         {
@@ -53,9 +59,51 @@ namespace BluetoothListener.Lib.Packages
 
                 case (byte)EddystonePacketType.EddystoneUrl:
                     return ParseEddystoneUrl( data );
+
+                case (byte)EddystonePacketType.EddystoneTlm:
+                    return ParseEddystoneTlm(data);
+
+                case (byte)EddystonePacketType.EddystoneEid:
+                    return ParseEddystoneEid(data);
+
                 default:
                     throw new PackageException($"Wrong Eddystone Package Type {eddystonePacketType:X}");
             }
+        }
+
+        protected static BeaconPackage ParseEddystoneEid(byte[] data)
+        {
+            if (data.Length != EddystoneEidPackageSize)
+                throw new PackageException($"Wrong Eddystone EID size {data.Length} byte(s)");
+            var rangingData = (sbyte)data[3];
+            var ephemeralIdentifier = BitConverter.ToUInt64(data, 4);
+            return new EddystoneEID
+            {
+                RangingData = rangingData,
+                EphemeralIdentifier = ephemeralIdentifier
+            };
+        }
+
+        protected static BeaconPackage ParseEddystoneTlm(byte[] data)
+        {
+            if(data.Length!=EddystoneTlmPackageSize)
+                throw new PackageException($"Wrong Eddystone TLM size {data.Length} byte(s)");
+            var version = data[3];
+            if(version == EncryptedEddystoneTlm)
+                throw new PackageException($"Encrypted Eddystone TLM doesn't support!");
+            var batteryVoltage = BitConverter.ToUInt16(data,4);
+            var temperature = BitConverter.ToUInt16(data, 6);
+            var advertisementCount = BitConverter.ToUInt32(data, 8);
+            var timeSinceBoot = BitConverter.ToUInt32(data, 12);
+
+            return new EddystoneTlm
+            {
+                Version = version,
+                BatteryVoltage = batteryVoltage,
+                BeaconTemperature = temperature,
+                AdvertisementPduCountSinceBoot = advertisementCount,
+                TimeSinceBoot = timeSinceBoot
+            };
         }
 
         private static BeaconPackage ParseEddystoneUrl( byte[] data )
@@ -121,6 +169,8 @@ namespace BluetoothListener.Lib.Packages
     public enum EddystonePacketType : byte
     {
         EddystoneId = 0x00,
-        EddystoneUrl = 0x10
+        EddystoneUrl = 0x10,
+        EddystoneTlm = 0x20,
+        EddystoneEid = 0x30
     }
 }

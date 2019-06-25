@@ -35,7 +35,7 @@ namespace BluetoothListener.Lib.Packages
                 }
                 catch (PackageException e)
                 {
-                    Debug.WriteLine(e.Message);
+                    //Debug.WriteLine(e.Message);
                 }
             }
         }
@@ -55,7 +55,7 @@ namespace BluetoothListener.Lib.Packages
                 }
                 catch (PackageException e)
                 {
-                    Debug.WriteLine(e.Message);
+                    //Debug.WriteLine(e.Message);
                 }
             }
         }

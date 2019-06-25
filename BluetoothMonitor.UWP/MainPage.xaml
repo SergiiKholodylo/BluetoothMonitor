@@ -25,7 +25,15 @@
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local1:BeaconDevice">
                     <StackPanel>
-                        <TextBlock Text="{x:Bind BluetoothAddressHex}" FontWeight="Bold" FontSize="16"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="{x:Bind BluetoothAddressHex}" FontWeight="Bold" FontSize="16"/>
+                            <TextBlock Grid.Column="1"  Text="{x:Bind Timestamp.TimeOfDay}"/>
+                        </Grid>
+                        
                         <TextBlock Text="{x:Bind Rssi}" FontSize="14"/>
                         <TextBlock Text="{x:Bind Info}" FontSize="12"/>
                     </StackPanel>
