@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.Runtime.InteropServices.WindowsRuntime;
+﻿using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Bluetooth.Advertisement;
+using BluetoothListener.Lib.Packages;
 
-namespace BluetoothListener.Lib.Packages
+namespace BluetoothListener.Lib.BeaconPackages
 {
     
     public class BeaconBuilder

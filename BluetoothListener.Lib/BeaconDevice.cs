@@ -34,6 +34,7 @@ namespace BluetoothListener.Lib
             get
             {
                 var str = "Data" + Environment.NewLine;
+                
                 foreach (var array in Data)
                 {
                     str += Utils.PrintArray(array) + Environment.NewLine;

@@ -14,17 +14,15 @@ namespace BluetoothMonitor.UWP
     public sealed partial class MainPage : Page
     {
         private readonly BluetoothListenerManager _listener;
+        public ViewData Data;
 
-        //private List<BeaconDevice> devices;
-        public ObservableCollection<BeaconDevice> Devices;
-         
 
         public MainPage()
         {
             this.InitializeComponent();
             var dispatcher = Window.Current.Dispatcher;
-            Devices = new ObservableCollection<BeaconDevice>();
-            _listener = new BluetoothListenerManager(Devices, dispatcher);
+            Data = new ViewData();
+            _listener = new BluetoothListenerManager(Data, dispatcher);
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)

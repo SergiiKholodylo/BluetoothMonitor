@@ -135,6 +135,7 @@
     <Compile Include="BeaconPackages\PackageException.cs" />
     <Compile Include="BeaconPackages\PackageFactory.cs" />
     <Compile Include="BeaconPackages\UnknownBeacon.cs" />
+    <Compile Include="IViewData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="Properties\BluetoothListener.Lib.rd.xml" />

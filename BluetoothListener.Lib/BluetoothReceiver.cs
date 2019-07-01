@@ -8,7 +8,7 @@ namespace BluetoothListener.Lib
     {
         private readonly BluetoothLEAdvertisementWatcher _watcher;
 
-        private bool _isListening;
+        private bool _isActive;
 
         public event AdvertisementReceivedHandler AdvertisementReceived;
 
@@ -19,21 +19,17 @@ namespace BluetoothListener.Lib
 
         public void StartListening()
         {
-            if (_isListening) return;
-
+            if (_isActive) return;
+            _isActive = true;
             SubscribeHandlers();
-
             _watcher.Start();
-
-            _isListening = true;
         }
         public void StopListening()
         {
-            if (!_isListening) return;
-
+            if (!_isActive) return;
+            _isActive = false;
             _watcher.Stop();
             UnsubscribeHandlers();
-            _isListening = false;
         }
 
         protected BluetoothLEAdvertisementWatcher CreateWatcherWithSettings()
@@ -69,7 +65,7 @@ namespace BluetoothListener.Lib
         }
         private void OnAdvertisementWatcherStopped(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementWatcherStoppedEventArgs args)
         {
-            _isListening = false;
+            _isActive = false;
             UnsubscribeHandlers();
         }
         private void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
