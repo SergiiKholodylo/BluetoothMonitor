@@ -1,10 +1,10 @@
-﻿namespace BluetoothListener.Lib.Packages
+﻿namespace BluetoothListener.Lib.BeaconPackages
 {
-    public class EddystoneEID : BeaconPackage
+    public class EddystoneEID : IBeaconPackage
     {
         public sbyte RangingData { set; get; }
         public ulong EphemeralIdentifier { set; get; }
-        public override string Display()
+        public string Display()
         {
             return $"Tx (0 m): {RangingData}dB Ephemeral Id: {EphemeralIdentifier:X}";
         }

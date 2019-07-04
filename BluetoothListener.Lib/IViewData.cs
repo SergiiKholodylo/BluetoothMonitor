@@ -1,10 +1,13 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using BluetoothListener.Lib.Dictionaries;
 
 namespace BluetoothListener.Lib
 {
     public interface IViewData
     {
-        ObservableCollection<BeaconDevice> Devices { set; get; }
+        IDictionary <ulong, IBluetoothBeacon> Devices { set; get; }
         string Mode { set; get; }
 
         long Received { set; get; }

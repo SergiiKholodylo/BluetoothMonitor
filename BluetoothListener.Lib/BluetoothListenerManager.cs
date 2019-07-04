@@ -1,15 +1,16 @@
-﻿using BluetoothListener.Lib.Packages;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Bluetooth.Advertisement;
 using Windows.UI.Core;
 using BluetoothListener.Lib.BeaconPackages;
+using BluetoothListener.Lib.BluetoothAdvertisement;
 
 namespace BluetoothListener.Lib
 {
-    public class BluetoothListenerManager
+    public class BluetoothListenerManager:IDisposable
     {
         private readonly IViewData _data;
         private readonly CoreDispatcher _dispatcher;
@@ -24,11 +25,11 @@ namespace BluetoothListener.Lib
             _data = data;
             _dispatcher = dispatcher;
             _bluetoothDevice = new BluetoothReceiver();
-            _bluetoothDevice.AdvertisementReceived += PackageReceived;
+            //_bluetoothDevice.AdvertisementReceived += PackageReceived;
             _isActive = false;
         }
 
-        private async void PackageReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
+        private async void PackageReceived(IBluetoothAdvertisementPackage args)
         {
             await RunWithDispatcher(() => { _data.Received++; });
             
@@ -46,25 +47,41 @@ namespace BluetoothListener.Lib
 
             if (beacon.RssiOutOfRange()) return;
 
-            await InsertOrReplaceBeaconInCollection(beacon);
+            InsertOrReplaceBeaconInCollection(beacon);
         }
 
-        private async Task InsertOrReplaceBeaconInCollection(BeaconDevice beacon)
+        private void InsertOrReplaceBeaconInCollection(IBluetoothBeacon beacon)
         {
             try
             {
                 var devices = _data.Devices;
                 _busy = true;
-                var alreadyExist = devices.FirstOrDefault((x => x.BluetoothAddress == beacon.BluetoothAddress));
-                var index = devices.IndexOf(alreadyExist);
-                if (index >= 0)
+
+                var bluetoothAddress = beacon.BluetoothAddress;
+                var found = devices.ContainsKey(bluetoothAddress);
+
+                if (found)
                 {
-                    beacon.CopyUniquePackagesFrom(alreadyExist);
+                    IBluetoothBeacon existingBeacon;
 
-                    await RunWithDispatcher(() => { devices.Remove(alreadyExist); });
+                    const int endlessLoopLimit = 40;
+                    var tries = 0;
+                    while (!devices.TryGetValue(bluetoothAddress, out existingBeacon))
+                    {
+                        if (tries++ > endlessLoopLimit) throw new Exception("Can't read value!");
+                    }
+
+                    beacon.CopyMissedPackagesFromBeacon(existingBeacon);
+                    beacon.UpdatePackageCounterAndPeriodBetweenPackages(existingBeacon);
+                    devices.Remove(bluetoothAddress);
+                    existingBeacon = null;
                 }
-                await RunWithDispatcher(() => { devices.Add(beacon); });
+                devices.Add(bluetoothAddress, beacon);
 
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Oooops, Lost Package {ex.Message}");
             }
             finally
             {
@@ -81,10 +98,11 @@ namespace BluetoothListener.Lib
         {
             if(_isActive) return;
             _isActive = true;
+            _bluetoothDevice.AdvertisementReceived += PackageReceived;
             await RunWithDispatcher(() =>
             {
                 _data.ClearData();
-                _data.Mode = "Start";
+                _data.Mode = "Running";
             });
             _bluetoothDevice.StartListening();
         }
@@ -93,35 +111,18 @@ namespace BluetoothListener.Lib
         {
             if (! _isActive) return;
             _isActive = false;
+            _bluetoothDevice.AdvertisementReceived -= PackageReceived;
             _bluetoothDevice.StopListening();
             await RunWithDispatcher(() =>
             {
-                _data.Mode = "Stop";
+                _data.Mode = "Stopped";
+                _data.ClearData();
             });
         }
 
-        private void PrintList()
+        public void Dispose()
         {
-            //Debug.WriteLine($"***********Beacons List Start* {_devices.Count} **********");
-            //foreach (var device in _devices)
-            //{
-            //    //Debug.WriteLine($"   Address: {device.BluetoothAddress:X} RSSI: {device.Rssi}dB TimeStamp {device.Timestamp}");
-
-            //    //Debug.WriteLine($"***********Manufacturer Settings* {device.Manufacturer.Count} **********");
-            //    foreach (var manufacture in device.Manufacturer)
-            //    {
-            //        Debug.WriteLine(Utils.PrintArray(manufacture));
-            //    }
-            //    Debug.WriteLine($"***********Data Settings* {device.Data.Count} **********");
-            //    foreach (var data in device.Data)
-            //    {
-            //        Debug.WriteLine(Utils.PrintArray(data));
-            //    }
-            //}
-            //Debug.WriteLine("***********Beacons List End******************");
+            //_bluetoothDevice.AdvertisementReceived -= PackageReceived;
         }
-
-
-        
     }
 }

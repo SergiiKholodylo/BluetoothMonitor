@@ -1,6 +1,5 @@
 ﻿using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Devices.Bluetooth.Advertisement;
-using BluetoothListener.Lib.Packages;
+using BluetoothListener.Lib.BluetoothAdvertisement;
 
 namespace BluetoothListener.Lib.BeaconPackages
 {
@@ -8,9 +7,9 @@ namespace BluetoothListener.Lib.BeaconPackages
     public class BeaconBuilder
     {
 
-        public static BeaconDevice CreateBeaconDeviceFromBleAdvertisement(BluetoothLEAdvertisementReceivedEventArgs eventArgs)
+        public static IBluetoothBeacon CreateBeaconDeviceFromBleAdvertisement(IBluetoothAdvertisementPackage eventArgs)
         {
-            BeaconDevice beaconDevice = CreateBeacon(eventArgs);
+            var beaconDevice = CreateBeacon(eventArgs);
 
             AddPackagesFromManufacturerSection(eventArgs, beaconDevice);
 
@@ -19,13 +18,12 @@ namespace BluetoothListener.Lib.BeaconPackages
             return beaconDevice;
         }
 
-        private static void AddPackagesFromDataSection(BluetoothLEAdvertisementReceivedEventArgs eventArgs, BeaconDevice beaconDevice)
+        public static void AddPackagesFromDataSection(IBluetoothAdvertisementPackage eventArgs, IBluetoothBeacon beaconDevice)
         {
             var dataSections = eventArgs.Advertisement.DataSections;
             foreach (var data in dataSections)
             {
                 var array = data.Data.ToArray();
-                beaconDevice.Data.Add(array);
 
                 try
                 {
@@ -34,19 +32,18 @@ namespace BluetoothListener.Lib.BeaconPackages
                 }
                 catch (PackageException e)
                 {
-                    //Debug.WriteLine(e.Message);
+
                 }
             }
         }
 
-        private static void AddPackagesFromManufacturerSection(BluetoothLEAdvertisementReceivedEventArgs eventArgs, BeaconDevice beaconDevice)
+        public static void AddPackagesFromManufacturerSection(IBluetoothAdvertisementPackage eventArgs, IBluetoothBeacon beaconDevice)
         {
             var manufacturerSections = eventArgs.Advertisement.ManufacturerData;
             foreach (var manufacture in manufacturerSections)
             {
                 var array = manufacture.Data.ToArray();
 
-                beaconDevice.Manufacturer.Add(array);
                 try
                 {
                     var package = PackageFactory.CreatePackageFromManufacturerPayload(array);
@@ -54,12 +51,12 @@ namespace BluetoothListener.Lib.BeaconPackages
                 }
                 catch (PackageException e)
                 {
-                    //Debug.WriteLine(e.Message);
+
                 }
             }
         }
 
-        private static BeaconDevice CreateBeacon(BluetoothLEAdvertisementReceivedEventArgs eventArgs)
+        public static IBluetoothBeacon CreateBeacon(IBluetoothAdvertisementPackage eventArgs)
         {
             var rssi = eventArgs.RawSignalStrengthInDBm;
             var address = eventArgs.BluetoothAddress;

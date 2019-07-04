@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text;
 
-namespace BluetoothListener.Lib.Packages
+namespace BluetoothListener.Lib.BeaconPackages
 {
     public class EddystoneUrlHelper
     {

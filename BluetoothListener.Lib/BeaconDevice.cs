@@ -1,69 +1,36 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using BluetoothListener.Lib.Packages;
+using BluetoothListener.Lib.BeaconPackages;
 
 namespace BluetoothListener.Lib
 {
-    public class BeaconDevice
+    public class BeaconDevice:IBluetoothBeacon
     {
-
-
-        protected List<BeaconPackage> Packages = new List<BeaconPackage>();
         public short Rssi { set; get; }
+        public DateTimeOffset Timestamp { set; get; }
+        public ulong ReceivedTimes { get; set; }
+        public ulong TimeSinceLastPacketReceivedInSec { get; set; }
         public ulong BluetoothAddress { set; get; }
 
+        public IPackageStorage Packages { set; get; }
+
         public string BluetoothAddressHex => BluetoothAddress.ToString("X");
-        public DateTimeOffset Timestamp { set;  get; }
 
-        public List<byte[]> Manufacturer = new List<byte[]>();
-
-        public List<byte[]> Data = new List<byte[]>();
-
-        public string ManufacturerString { get {
-                var str = "Manufacturer Data" + Environment.NewLine;
-                foreach (var array in Manufacturer)
-                {
-                    str += Utils.PrintArray(array) + Environment.NewLine;
-                }
-                return str;
-            } }
-
-        public string DataString
-        {
-            get
-            {
-                var str = "Data" + Environment.NewLine;
-                
-                foreach (var array in Data)
-                {
-                    str += Utils.PrintArray(array) + Environment.NewLine;
-                }
-                return str;
-            }
-        }
-
-        public string Info { get
-            {
-                var info = string.Empty;
-                foreach (var package in Packages)
-                {
-                    info += package.Display() + Environment.NewLine;
-                }
-                return info;
-            } }
+        public string Info => Packages.Info();
 
         public BeaconDevice(ulong address, short rssi, DateTimeOffset timeOffset)
         {
             BluetoothAddress = address;
             Rssi = rssi;
             Timestamp = timeOffset;
-
+            ReceivedTimes = 1L;
+            Packages = new PackageStorage();
         }
 
         public int NumberOfPackages()
         {
-            return Packages.Count;
+            return Packages.Count();
         }
 
         public bool RssiOutOfRange()
@@ -71,24 +38,37 @@ namespace BluetoothListener.Lib
             return Rssi == -127;
         }
 
-        public void AddPackage(BeaconPackage package)
+        public void AddPackage(IBeaconPackage package)
         {
             Packages.Add(package);
         }
 
-        public void CopyUniquePackagesFrom(BeaconDevice source)
+        public void CopyMissedPackagesFromBeacon(IBluetoothBeacon source)
         {
-            var newPackagesType = new Dictionary<Type, string>();
+            Packages.CopyMissedPackagesFromBeacon(source);
+        }
 
-            foreach (var package in Packages)
+        public void UpdatePackageCounterAndPeriodBetweenPackages(IBluetoothBeacon previousBeacon)
+        {
+            TimeSinceLastPacketReceivedInSec = Convert.ToUInt64(Math.Abs((Timestamp - previousBeacon.Timestamp).TotalSeconds));
+            ReceivedTimes = previousBeacon.ReceivedTimes + 1;
+        }
+
+        public void UpdateFromDevice(IBluetoothBeacon beacon)
+        {
+
+            TimeSinceLastPacketReceivedInSec = Convert.ToUInt64(Math.Abs((Timestamp - beacon.Timestamp).TotalSeconds));
+            ReceivedTimes ++;
+
+            Rssi = beacon.Rssi;
+            Timestamp = beacon.Timestamp;
+            BluetoothAddress = beacon.BluetoothAddress;
+
+            var newPackages = beacon.Packages.GetPackages();
+
+            foreach (var beaconPackage in newPackages)
             {
-                var newType = package.GetType();
-                if (!newPackagesType.ContainsKey(newType)) newPackagesType.Add(newType, "");
-            }
-            foreach (var package in source.Packages)
-            {
-                if (!newPackagesType.ContainsKey(package.GetType()))
-                    AddPackage(package);
+                Packages.Add(beaconPackage);
             }
         }
     }

@@ -1,11 +1,11 @@
-﻿namespace BluetoothListener.Lib
+﻿namespace BluetoothListener.Lib.BeaconPackages
 {
-    public class EddystoneUID : BeaconPackage
+    public class EddystoneUID : IBeaconPackage
     {
         public string NamespaceId { get; internal set; }
         public string InstanceId { get; internal set; }
 
-        public override string Display()
+        public string Display()
         {
             return $"Namespace Id: {NamespaceId} Instance Id: {InstanceId}";
                 

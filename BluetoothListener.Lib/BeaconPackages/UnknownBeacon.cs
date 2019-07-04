@@ -1,8 +1,8 @@
-﻿namespace BluetoothListener.Lib.Packages
+﻿namespace BluetoothListener.Lib.BeaconPackages
 {
-    public class UnknownBeacon : BeaconPackage
+    public class UnknownBeacon : IBeaconPackage
     {
-        public override string Display()
+        public string Display()
         {
             return "Unknown Beacon Package";
         }

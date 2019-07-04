@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local1="using:BluetoothListener.Lib"
+    xmlns:collections="using:Windows.Foundation.Collections"
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.BottomAppBar>
@@ -15,6 +16,7 @@
             </CommandBar.Content>
             <AppBarButton Icon="Accept" Label="Listen" Click="AppBarButton_Click" />
             <AppBarButton Icon="Cancel" Label="Stop" Click="AppBarButton_Click_1"/>
+            <AppBarButton x:Name="BtInfo" Label="Info" Icon="Help" Click="BtInfo_Click" />
         </CommandBar>
     </Page.BottomAppBar>
     <Page.Resources>
@@ -26,23 +28,28 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ListView Grid.Row="1" ItemsSource="{x:Bind Data.Devices}" 
+        <TextBlock Text="BLE Beacon Monitor" FontWeight="Bold" FontSize="20" TextAlignment="Center"/>
+        <ListView Grid.Row="1" ItemsSource="{Binding Devices.Values, Mode=OneWay}" 
             HorizontalAlignment="Center"
-            VerticalAlignment="Top" Tapped="ListView_Tapped">
+            VerticalAlignment="Top" Tapped="ListView_Tapped" >
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local1:BeaconDevice">
                     <StackPanel>
-                        <Grid>
+                        <Grid Width="700">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{x:Bind BluetoothAddressHex}" FontWeight="Bold" FontSize="16"/>
-                            <TextBlock Grid.Column="1"  Text="{x:Bind Timestamp , Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:T}'}"/>
+                            <TextBlock Grid.Column="0" Text="{Binding BluetoothAddressHex}" FontWeight="Bold" FontSize="16"/>
+                            <TextBlock Grid.Column="1" Text="{Binding ReceivedTimes}" FontSize="12"/>
+                            <TextBlock Grid.Column="2" Text="{Binding TimeSinceLastPacketReceivedInSec}" FontSize="12"/>
+                            <TextBlock Grid.Column="3" Text="{Binding Rssi}" FontSize="14"/>
+                            <TextBlock Grid.Column="4"  Text="{Binding Timestamp , Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:T}'}"/>
                         </Grid>
-                        
-                        <TextBlock Text="{x:Bind Rssi}" FontSize="14"/>
-                        <TextBlock Text="{x:Bind Info}" FontSize="12"/>
+                        <TextBlock Text="{Binding Info}" FontSize="12"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>

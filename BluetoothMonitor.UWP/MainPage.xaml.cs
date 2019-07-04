@@ -1,5 +1,9 @@
-﻿using BluetoothListener.Lib;
+﻿using System;
+using BluetoothListener.Lib;
 using System.Collections.ObjectModel;
+using System.Linq;
+using Windows.System;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -23,21 +27,39 @@ namespace BluetoothMonitor.UWP
             var dispatcher = Window.Current.Dispatcher;
             Data = new ViewData();
             _listener = new BluetoothListenerManager(Data, dispatcher);
+            DataContext = Data;
         }
 
         private void AppBarButton_Click(object sender, RoutedEventArgs e)
         {
+            DataContext = Data;
             _listener.Start();
         }
 
         private void AppBarButton_Click_1(object sender, RoutedEventArgs e)
         {
+
             _listener.Stop();
+            DataContext = null;
         }
 
         private void ListView_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            var element = e;
+
+        }
+
+        private  async void BtInfo_Click(object sender, RoutedEventArgs e)
+        {
+            var memoryUsage = MemoryManager.AppMemoryUsage;
+
+            var memoryUsageInMb = (float) memoryUsage / 1024 / 1024;
+
+            var infoText = $"Memory Usage: {memoryUsageInMb:F} Mb {Environment.NewLine}Beacons count: {Data.Devices.Count()}";
+
+            var messageDialog = new MessageDialog(infoText);
+
+           // Show the message dialog
+            await messageDialog.ShowAsync();
         }
     }
 }

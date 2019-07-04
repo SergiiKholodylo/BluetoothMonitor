@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -7,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using BluetoothListener.Lib;
+using BluetoothListener.Lib.Dictionaries;
 
 namespace BluetoothMonitor.UWP
 {
@@ -16,9 +18,9 @@ namespace BluetoothMonitor.UWP
         private long _received;
         private long _dropped;
         private bool _busy;
-        private ObservableCollection<BeaconDevice> _devices;
+        private IDictionary<ulong, IBluetoothBeacon> _devices = new ObservableConcurrentDictionary<ulong, IBluetoothBeacon>();
 
-        public ObservableCollection<BeaconDevice> Devices
+        public IDictionary<ulong, IBluetoothBeacon> Devices
         {
             get => _devices;
             set
@@ -70,17 +72,19 @@ namespace BluetoothMonitor.UWP
 
         public ViewData()
         {
-            Devices =  new ObservableCollection<BeaconDevice>();
             ClearData();
         }
 
         public void ClearData()
         {
-            _devices.Clear();
-            Mode = "Stop";
+            Devices.Clear();
+            Mode = "Stopped";
             Received = 0L;
             Dropped = 0L;
             Busy = false;
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -1,5 +1,6 @@
 ﻿using System;
 using Windows.Devices.Bluetooth.Advertisement;
+using BluetoothListener.Lib.BluetoothAdvertisement;
 
 namespace BluetoothListener.Lib
 {   
@@ -70,7 +71,9 @@ namespace BluetoothListener.Lib
         }
         private void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher sender, BluetoothLEAdvertisementReceivedEventArgs args)
         {
-            AdvertisementReceived?.Invoke(sender,args);
+            var converter = new RegularBluetoothConverter();
+
+            AdvertisementReceived?.Invoke(converter.ConvertFromBluetoothLeAdvertisementPackage(args));
         }
 
 

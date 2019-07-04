@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BluetoothListener.Lib.Packages
+namespace BluetoothListener.Lib.BeaconPackages
 {
     public class PackageException:Exception
     {

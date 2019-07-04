@@ -1,10 +1,10 @@
-﻿namespace BluetoothListener.Lib.Packages
+﻿namespace BluetoothListener.Lib.BeaconPackages
 {
-    public class EddystoneURL : BeaconPackage
+    public class EddystoneURL : IBeaconPackage
     {
         public string Url { get; internal set; }
 
-        public override string Display()
+        public string Display()
         {
             return $"Url: {EddystoneUrlHelper.FromEddystoneUrl( Url )}";
         }

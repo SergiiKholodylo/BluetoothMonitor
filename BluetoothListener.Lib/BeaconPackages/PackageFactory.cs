@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace BluetoothListener.Lib.Packages
+namespace BluetoothListener.Lib.BeaconPackages
 {
     /* Eddystone package format -  https://github.com/google/eddystone */
 
@@ -17,10 +16,27 @@ namespace BluetoothListener.Lib.Packages
 
         private const int EncryptedEddystoneTlm = 0x01;
 
-        public static BeaconPackage CreatePackageFromManufacturerPayload(byte[] data)
+        private const byte BeaconSubtype = 0x02;
+
+        public static IBeaconPackage CreatePackageFromManufacturerPayload(byte[] data)
         {
+            /*
+            Byte 3: Length: 0x1a
+            Byte 4: Type: 0xff (Custom Manufacturer Packet)
+            Byte 5-6: Manufacturer ID : 0x4c00 (Apple)
+            Byte 7: SubType: 0x02 (iBeacon)
+            Byte 8: SubType Length: 0x15
+            Byte 9-24: Proximity UUID
+            Byte 25-26: Major
+            Byte 27-28: Minor
+            Byte 29: Signal Power             
+             */
+            Debug.WriteLine($"Manufacturer Payload ({data.Length} bytes):{Utils.PrintArray(data, "")}");
             if (data.Length < BeaconUuidMinSize) 
                 throw new PackageException($"Wrong payload {Utils.PrintArray(data, "")}");
+            var packageSubtype = data[0];
+            if(packageSubtype != BeaconSubtype)
+                throw new PackageException($"The packet is not iBeacon {data[0]}");
             var major = data[0x12] * 0x100 + data[0x13];
             var minor = data[0x14] * 0x100 + data[0x15];
 
@@ -38,12 +54,14 @@ namespace BluetoothListener.Lib.Packages
             };
         }
 
-        public static BeaconPackage CreatePackageFromDataPayload(byte[] data)
+        public static IBeaconPackage CreatePackageFromDataPayload(byte[] data)
         {
+            Debug.WriteLine($"Data Payload ({data.Length} bytes):{Utils.PrintArray(data, "")}");
+
             if (data.Length <= EddystoneMinHeaderSize)
                 throw new PackageException($"Wrong payload {Utils.PrintArray(data, "")}"); 
 
-            Debug.WriteLine($"ParseData ({data.Length} bytes):{Utils.PrintArray(data, "")}");
+            
 
             if (!HasKontaktIoSignature(data))
                 throw new PackageException($"Payload Has Not Got a Signature!");
@@ -71,7 +89,7 @@ namespace BluetoothListener.Lib.Packages
             }
         }
 
-        protected static BeaconPackage ParseEddystoneEid(byte[] data)
+        protected static IBeaconPackage ParseEddystoneEid(byte[] data)
         {
             if (data.Length != EddystoneEidPackageSize)
                 throw new PackageException($"Wrong Eddystone EID size {data.Length} byte(s)");
@@ -84,7 +102,7 @@ namespace BluetoothListener.Lib.Packages
             };
         }
 
-        protected static BeaconPackage ParseEddystoneTlm(byte[] data)
+        protected static IBeaconPackage ParseEddystoneTlm(byte[] data)
         {
             if(data.Length!=EddystoneTlmPackageSize)
                 throw new PackageException($"Wrong Eddystone TLM size {data.Length} byte(s)");
@@ -92,7 +110,7 @@ namespace BluetoothListener.Lib.Packages
             if(version == EncryptedEddystoneTlm)
                 throw new PackageException($"Encrypted Eddystone TLM doesn't support!");
             var batteryVoltage = BitConverter.ToUInt16(data,4);
-            var temperature = BitConverter.ToUInt16(data, 6);
+            var temperature = BitConverter.ToInt16(data, 6);
             var advertisementCount = BitConverter.ToUInt32(data, 8);
             var timeSinceBoot = BitConverter.ToUInt32(data, 12);
 
@@ -106,7 +124,7 @@ namespace BluetoothListener.Lib.Packages
             };
         }
 
-        private static BeaconPackage ParseEddystoneUrl( byte[] data )
+        private static IBeaconPackage ParseEddystoneUrl( byte[] data )
         {
             var url = new byte[data.Length - EddystonePackageDataOffset];
             for (var j = EddystonePackageDataOffset; j < data.Length; j++)
@@ -118,7 +136,7 @@ namespace BluetoothListener.Lib.Packages
             };
         }
 
-        private static BeaconPackage ParseEddystoneId( byte[] data )
+        private static IBeaconPackage ParseEddystoneId( byte[] data )
         {
             if (data.Length < EddystoneIdMinSize)
                 throw new PackageException($"Wrong payload {Utils.PrintArray(data, "")}");
