@@ -110,7 +110,8 @@ namespace BluetoothListener.Lib.BeaconPackages
             if(version == EncryptedEddystoneTlm)
                 throw new PackageException($"Encrypted Eddystone TLM doesn't support!");
             var batteryVoltage = BitConverter.ToUInt16(data,4);
-            var temperature = BitConverter.ToInt16(data, 6);
+
+            var temperature = (sbyte) data[6]; //Convert.ToSingle($"{(sbyte)data[6]}.{(byte)data[7]}");
             var advertisementCount = BitConverter.ToUInt32(data, 8);
             var timeSinceBoot = BitConverter.ToUInt32(data, 12);
 

@@ -4,7 +4,7 @@
     {
         public byte Version { set; get; }
         public ushort BatteryVoltage { set; get; }
-        public short BeaconTemperature { set; get; }
+        public sbyte BeaconTemperature { set; get; }
         public uint AdvertisementPduCountSinceBoot { set; get; }
         public uint TimeSinceBoot { get; set; }
 

@@ -14,9 +14,18 @@
             <CommandBar.Content>
                 <Grid/>
             </CommandBar.Content>
-            <AppBarButton Icon="Accept" Label="Listen" Click="AppBarButton_Click" />
-            <AppBarButton Icon="Cancel" Label="Stop" Click="AppBarButton_Click_1"/>
-            <AppBarButton x:Name="BtInfo" Label="Info" Icon="Help" Click="BtInfo_Click" />
+            <AppBarButton 
+                Label="Listen" 
+                Click="AppBarButton_Click" 
+                Icon="Play" />
+            <AppBarButton 
+                Icon="Stop" 
+                Label="Stop" 
+                Click="AppBarButton_Click_1"/>
+            <AppBarButton 
+                Label="Info" 
+                Icon="Help" 
+                Click="BtInfo_Click" />
         </CommandBar>
     </Page.BottomAppBar>
     <Page.Resources>
@@ -30,29 +39,61 @@
         </Grid.RowDefinitions>
         <TextBlock Text="BLE Beacon Monitor" FontWeight="Bold" FontSize="20" TextAlignment="Center"/>
         <ListView Grid.Row="1" ItemsSource="{Binding Devices.Values, Mode=OneWay}" 
-            HorizontalAlignment="Center"
+            HorizontalAlignment="Stretch"
             VerticalAlignment="Top" Tapped="ListView_Tapped" >
             <ListView.ItemTemplate>
                 <DataTemplate x:DataType="local1:BeaconDevice">
                     <StackPanel>
-                        <Grid Width="700">
+                        <Grid HorizontalAlignment="Stretch">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                                <ColumnDefinition />
+                                <ColumnDefinition Width="2*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="{Binding BluetoothAddressHex}" FontWeight="Bold" FontSize="16"/>
-                            <TextBlock Grid.Column="1" Text="{Binding ReceivedTimes}" FontSize="12"/>
-                            <TextBlock Grid.Column="2" Text="{Binding TimeSinceLastPacketReceivedInSec}" FontSize="12"/>
-                            <TextBlock Grid.Column="3" Text="{Binding Rssi}" FontSize="14"/>
-                            <TextBlock Grid.Column="4"  Text="{Binding Timestamp , Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:T}'}"/>
+                            <TextBlock 
+                                Grid.Column="0" 
+                                Text="{Binding BluetoothAddressHex}" 
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                FontWeight="Bold" 
+                                FontSize="12"/>
+                            <TextBlock 
+                                Grid.Column="1" 
+                                Text="{Binding ReceivedTimes}" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="12"/>
+                            <TextBlock 
+                                Grid.Column="2" 
+                                Text="{Binding TimeSinceLastPacketReceivedInSec}" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontSize="12"/>
+                            <TextBlock 
+                                Grid.Column="3" 
+                                Text="{Binding Rssi}" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                FontWeight="Bold"
+                                FontSize="12"/>
+                            <TextBlock 
+                                Grid.Column="4"  
+                                HorizontalAlignment="Right"
+                                VerticalAlignment="Center"
+                                FontSize="12"
+                                Text="{Binding Timestamp , Converter={StaticResource StringFormatConverter}, ConverterParameter='{}{0:T}'}"/>
                         </Grid>
                         <TextBlock Text="{Binding Info}" FontSize="12"/>
                     </StackPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>

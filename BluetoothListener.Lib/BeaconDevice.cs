@@ -1,17 +1,70 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using BluetoothListener.Lib.BeaconPackages;
 
 namespace BluetoothListener.Lib
 {
-    public class BeaconDevice:IBluetoothBeacon
+    public class BeaconDevice:IBluetoothBeacon,INotifyPropertyChanged
     {
-        public short Rssi { set; get; }
-        public DateTimeOffset Timestamp { set; get; }
-        public ulong ReceivedTimes { get; set; }
-        public ulong TimeSinceLastPacketReceivedInSec { get; set; }
-        public ulong BluetoothAddress { set; get; }
+        private short _rssi;
+        private DateTimeOffset _timestamp;
+        private ulong _receivedTimes;
+        private ulong _timeSinceLastPacketReceivedInSec;
+        private ulong _bluetoothAddress;
+
+        public short Rssi
+        {
+            set
+            {
+                _rssi = value;
+                NotifyPropertyChanged();
+            }
+            get => _rssi;
+        }
+
+        public DateTimeOffset Timestamp
+        {
+            set
+            {
+                _timestamp = value;
+                NotifyPropertyChanged();
+            }
+            get => _timestamp;
+        }
+
+        public ulong ReceivedTimes
+        {
+            get => _receivedTimes;
+            set
+            {
+                _receivedTimes = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public ulong TimeSinceLastPacketReceivedInSec
+        {
+            get => _timeSinceLastPacketReceivedInSec;
+            set
+            {
+                _timeSinceLastPacketReceivedInSec = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public ulong BluetoothAddress
+        {
+            set
+            {
+                _bluetoothAddress = value;
+                NotifyPropertyChanged($"BluetoothAddressHex");
+                
+            }
+            get => _bluetoothAddress;
+        }
 
         public IPackageStorage Packages { set; get; }
 
@@ -40,12 +93,15 @@ namespace BluetoothListener.Lib
 
         public void AddPackage(IBeaconPackage package)
         {
+
             Packages.Add(package);
+            NotifyPropertyChanged($"Info");
         }
 
         public void CopyMissedPackagesFromBeacon(IBluetoothBeacon source)
         {
             Packages.CopyMissedPackagesFromBeacon(source);
+            NotifyPropertyChanged($"Info");
         }
 
         public void UpdatePackageCounterAndPeriodBetweenPackages(IBluetoothBeacon previousBeacon)
@@ -70,6 +126,13 @@ namespace BluetoothListener.Lib
             {
                 Packages.Add(beaconPackage);
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
