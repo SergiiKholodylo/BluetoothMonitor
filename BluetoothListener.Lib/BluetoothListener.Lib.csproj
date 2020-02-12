@@ -123,6 +123,8 @@
     <Compile Include="BeaconDevice.cs" />
     <Compile Include="BeaconPackages\IPackageStorage.cs" />
     <Compile Include="BeaconPackages\PackageStorage.cs" />
+    <Compile Include="BeaconPackages\Packets\AbstractBeacon.cs" />
+    <Compile Include="BeaconPackages\Packets\BeaconPacketEnum.cs" />
     <Compile Include="BluetoothAdvertisement\BluetoothAdvertisement.cs" />
     <Compile Include="BluetoothAdvertisement\BluetoothAdvertisementPackage.cs" />
     <Compile Include="BluetoothAdvertisement\IBluetoothConverter.cs" />
@@ -138,12 +140,12 @@
     <Compile Include="BeaconPackages\BeaconBuilder.cs" />
     <Compile Include="BeaconPackages\IBeaconPackage.cs" />
     <Compile Include="BluetoothListenerManager.cs" />
-    <Compile Include="BeaconPackages\EddystoneEID.cs" />
-    <Compile Include="BeaconPackages\EddystoneTLM.cs" />
-    <Compile Include="BeaconPackages\EddystoneUID.cs" />
-    <Compile Include="BeaconPackages\EddystoneURL.cs" />
+    <Compile Include="BeaconPackages\Packets\EddystoneEID.cs" />
+    <Compile Include="BeaconPackages\Packets\EddystoneTLM.cs" />
+    <Compile Include="BeaconPackages\Packets\EddystoneUID.cs" />
+    <Compile Include="BeaconPackages\Packets\EddystoneURL.cs" />
     <Compile Include="BeaconPackages\EddystoneUrlHelper.cs" />
-    <Compile Include="BeaconPackages\ClassicBeaconPackage.cs" />
+    <Compile Include="BeaconPackages\Packets\ClassicBeaconPackage.cs" />
     <Compile Include="BeaconPackages\PackageException.cs" />
     <Compile Include="BeaconPackages\PackageFactory.cs" />
     <Compile Include="BeaconPackages\UnknownBeacon.cs" />
@@ -164,6 +166,7 @@
   <ItemGroup>
     <Content Include="BeaconPackages\packages.png" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

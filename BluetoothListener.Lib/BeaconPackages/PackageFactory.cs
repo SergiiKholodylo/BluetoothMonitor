@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using BluetoothListener.Lib.BeaconPackages.Packets;
 
 namespace BluetoothListener.Lib.BeaconPackages
 {
@@ -131,7 +132,7 @@ namespace BluetoothListener.Lib.BeaconPackages
             for (var j = EddystonePackageDataOffset; j < data.Length; j++)
                 url[j - EddystonePackageDataOffset] = data[j];
             var eddystoneFrame = BitConverter.ToString(url).Replace("-", "");
-            return new EddystoneURL
+            return new EddystoneUrl
             {
                 Url = eddystoneFrame
             };
@@ -149,7 +150,7 @@ namespace BluetoothListener.Lib.BeaconPackages
 
             var eddystoneFrame = BitConverter.ToString(beaconIdArray).Replace("-", "");
 
-            return new EddystoneUID
+            return new EddystoneUid
             {
                 NamespaceId = eddystoneFrame.Substring(0, 20),
                 InstanceId = eddystoneFrame.Substring(20)

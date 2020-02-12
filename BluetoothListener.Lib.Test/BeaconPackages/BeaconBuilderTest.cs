@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Devices.Bluetooth.Advertisement;
 using BluetoothListener.Lib.BeaconPackages;
+using BluetoothListener.Lib.BeaconPackages.Packets;
 using BluetoothListener.Lib.BluetoothAdvertisement;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

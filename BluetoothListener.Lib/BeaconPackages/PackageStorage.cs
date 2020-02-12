@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace BluetoothListener.Lib.BeaconPackages
 {
-    public class PackageStorage:IPackageStorage
+    public class PackageStorage : IPackageStorage
     {
         private readonly Dictionary<Type, IBeaconPackage> _beaconPackages = new Dictionary<Type, IBeaconPackage>();
 
@@ -14,7 +14,7 @@ namespace BluetoothListener.Lib.BeaconPackages
             {
                 _beaconPackages.Remove(type);
             }
-            _beaconPackages.Add(type,package);
+            _beaconPackages.Add(type, package);
         }
 
         public void Clear()
@@ -33,7 +33,7 @@ namespace BluetoothListener.Lib.BeaconPackages
 
             foreach (var beaconPackage in _beaconPackages)
             {
-                info += beaconPackage.Value.Display() + Environment.NewLine;
+                info += beaconPackage.Value + Environment.NewLine;
             }
 
             return info;

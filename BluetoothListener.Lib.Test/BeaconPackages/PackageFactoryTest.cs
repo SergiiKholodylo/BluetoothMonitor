@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BluetoothListener.Lib.BeaconPackages;
+﻿using BluetoothListener.Lib.BeaconPackages;
+using BluetoothListener.Lib.BeaconPackages.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BluetoothListener.Lib.Test.Packages
+namespace BluetoothListener.Lib.Test.BeaconPackages
 {
     [TestClass]
     public class PackageFactoryTest:PackageFactory

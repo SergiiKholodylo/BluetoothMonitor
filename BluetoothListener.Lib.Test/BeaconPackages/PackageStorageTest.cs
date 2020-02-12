@@ -1,4 +1,5 @@
 ﻿using BluetoothListener.Lib.BeaconPackages;
+using BluetoothListener.Lib.BeaconPackages.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BluetoothListener.Lib.Test.BeaconPackages

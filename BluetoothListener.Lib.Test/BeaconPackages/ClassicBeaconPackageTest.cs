@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BluetoothListener.Lib.BeaconPackages;
+﻿using BluetoothListener.Lib.BeaconPackages.Packets;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace BluetoothListener.Lib.Test.BeaconPackages
@@ -23,9 +18,9 @@ namespace BluetoothListener.Lib.Test.BeaconPackages
             var standardOutput = "UUID: 123456789 Major: 12345 Minor: 67890";
 
 
-            var displayInfo = classicBeaconPackage.Display();
+            var displayInfo = classicBeaconPackage.ToString();
 
-            Assert.AreEqual(displayInfo,standardOutput);
+            Assert.AreEqual(displayInfo, standardOutput);
         }
     }
 }

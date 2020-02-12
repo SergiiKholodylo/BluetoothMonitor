@@ -126,6 +126,7 @@ namespace BluetoothListener.Lib
             {
                 _data.Mode = "Stopped";
             });
+            GC.Collect();
         }
     }
 }
