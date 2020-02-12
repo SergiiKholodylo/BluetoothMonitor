@@ -32,7 +32,7 @@ namespace BluetoothListener.Lib.BeaconPackages
             Byte 27-28: Minor
             Byte 29: Signal Power             
              */
-            Debug.WriteLine($"Manufacturer Payload ({data.Length} bytes):{Utils.PrintArray(data, "")}");
+            //Debug.WriteLine($"Manufacturer Payload ({data.Length} bytes):{Utils.PrintArray(data, "")}");
             if (data.Length < BeaconUuidMinSize) 
                 throw new PackageException($"Wrong payload {Utils.PrintArray(data, "")}");
             var packageSubtype = data[0];
@@ -57,7 +57,7 @@ namespace BluetoothListener.Lib.BeaconPackages
 
         public static IBeaconPackage CreatePackageFromDataPayload(byte[] data)
         {
-            Debug.WriteLine($"Data Payload ({data.Length} bytes):{Utils.PrintArray(data, "")}");
+            //Debug.WriteLine($"Data Payload ({data.Length} bytes):{Utils.PrintArray(data, "")}");
 
             if (data.Length <= EddystoneMinHeaderSize)
                 throw new PackageException($"Wrong payload {Utils.PrintArray(data, "")}"); 
@@ -67,7 +67,7 @@ namespace BluetoothListener.Lib.BeaconPackages
             if (!HasKontaktIoSignature(data))
                 throw new PackageException($"Payload Has Not Got a Signature!");
 
-            Debug.WriteLine($"EddystonePacketType: {data[2]:X}");
+            //Debug.WriteLine($"EddystonePacketType: {data[2]:X}");
 
             var eddystonePacketType = data[2];
 
@@ -184,13 +184,5 @@ namespace BluetoothListener.Lib.BeaconPackages
             var guid = new Guid(byteGuid);
             return guid;
         }
-    }
-
-    public enum EddystonePacketType : byte
-    {
-        EddystoneId = 0x00,
-        EddystoneUrl = 0x10,
-        EddystoneTlm = 0x20,
-        EddystoneEid = 0x30
     }
 }

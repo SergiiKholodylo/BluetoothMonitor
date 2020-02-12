@@ -120,11 +120,14 @@
     <RestoreProjectStyle>PackageReference</RestoreProjectStyle>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AdvertisementReceivedHandler.cs" />
+    <Compile Include="BeaconCache.cs" />
     <Compile Include="BeaconDevice.cs" />
+    <Compile Include="BeaconPackages\EddystonePacketType.cs" />
     <Compile Include="BeaconPackages\IPackageStorage.cs" />
     <Compile Include="BeaconPackages\PackageStorage.cs" />
     <Compile Include="BeaconPackages\Packets\AbstractBeacon.cs" />
-    <Compile Include="BeaconPackages\Packets\BeaconPacketEnum.cs" />
+    <Compile Include="BeaconPackages\Packets\BeaconPacket.cs" />
     <Compile Include="BluetoothAdvertisement\BluetoothAdvertisement.cs" />
     <Compile Include="BluetoothAdvertisement\BluetoothAdvertisementPackage.cs" />
     <Compile Include="BluetoothAdvertisement\IBluetoothConverter.cs" />
@@ -135,6 +138,7 @@
     <Compile Include="Dictionaries\ObservableStyleDictionary.cs" />
     <Compile Include="BluetoothAdvertisement\IBluetoothAdvertisement.cs" />
     <Compile Include="BluetoothAdvertisement\IBluetoothAdvertisementPackage.cs" />
+    <Compile Include="IBeaconCache.cs" />
     <Compile Include="IBluetoothBeacon.cs" />
     <Compile Include="IBluetoothReceiver.cs" />
     <Compile Include="BeaconPackages\BeaconBuilder.cs" />

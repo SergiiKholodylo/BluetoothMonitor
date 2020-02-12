@@ -1,74 +1,43 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Text;
 using BluetoothListener.Lib.BeaconPackages;
 
 namespace BluetoothListener.Lib
 {
-    public class BeaconDevice:IBluetoothBeacon,INotifyPropertyChanged
+    public class BeaconDevice:IBluetoothBeacon
     {
-        private short _rssi;
-        private DateTimeOffset _timestamp;
-        private ulong _receivedTimes;
-        private ulong _timeSinceLastPacketReceivedInSec;
-        private ulong _bluetoothAddress;
+        public short Rssi { set; get; }
 
-        public short Rssi
-        {
-            set
-            {
-                _rssi = value;
-                NotifyPropertyChanged();
-            }
-            get => _rssi;
-        }
+        public DateTimeOffset Timestamp { set; get; }
 
-        public DateTimeOffset Timestamp
-        {
-            set
-            {
-                _timestamp = value;
-                NotifyPropertyChanged();
-            }
-            get => _timestamp;
-        }
+        public ulong ReceivedTimes { get; set; }
 
-        public ulong ReceivedTimes
-        {
-            get => _receivedTimes;
-            set
-            {
-                _receivedTimes = value;
-                NotifyPropertyChanged();
-            }
-        }
+        public ulong TimeSinceLastPacketReceivedInSec { get; set; }
 
-        public ulong TimeSinceLastPacketReceivedInSec
-        {
-            get => _timeSinceLastPacketReceivedInSec;
-            set
-            {
-                _timeSinceLastPacketReceivedInSec = value;
-                NotifyPropertyChanged();
-            }
-        }
-
-        public ulong BluetoothAddress
-        {
-            set
-            {
-                _bluetoothAddress = value;
-                NotifyPropertyChanged($"BluetoothAddressHex");
-                
-            }
-            get => _bluetoothAddress;
-        }
+        public ulong BluetoothAddress { set; get; }
 
         public IPackageStorage Packages { set; get; }
 
         public string BluetoothAddressHex => BluetoothAddress.ToString("X");
 
         public string Info => Packages.Info();
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(new string('*', 30))
+                .AppendLine($"Address: {BluetoothAddressHex}")
+                .AppendLine($"RSSI: {Rssi} Received: {ReceivedTimes}");
+            foreach (var package in Packages.GetPackages())
+            {
+                sb.AppendLine(package.ToString());
+            }
+
+            sb.AppendLine(new string('*', 30));
+            return sb.ToString();
+        }
 
         public BeaconDevice(ulong address, short rssi, DateTimeOffset timeOffset)
         {
@@ -78,6 +47,12 @@ namespace BluetoothListener.Lib
             ReceivedTimes = 1L;
             Packages = new PackageStorage();
         }
+
+        ~ BeaconDevice()
+        {
+            Packages = null;
+        }
+
 
         public int NumberOfPackages()
         {
@@ -93,13 +68,13 @@ namespace BluetoothListener.Lib
         {
 
             Packages.Add(package);
-            NotifyPropertyChanged($"Info");
+
         }
 
         public void CopyMissedPackagesFromBeacon(IBluetoothBeacon source)
         {
             Packages.CopyMissedPackagesFromBeacon(source);
-            NotifyPropertyChanged($"Info");
+
         }
 
         public void UpdatePackageCounterAndPeriodBetweenPackages(IBluetoothBeacon previousBeacon)
@@ -126,11 +101,6 @@ namespace BluetoothListener.Lib
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void NotifyPropertyChanged([CallerMemberName] string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        
     }
 }

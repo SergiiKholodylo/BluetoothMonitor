@@ -1,7 +1,7 @@
 ﻿using BluetoothListener.Lib.BeaconPackages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace BluetoothListener.Lib.Test.Packages
+namespace BluetoothListener.Lib.Test.BeaconPackages
 {
     [TestClass]
     public class EddystoneUrlHelperTest

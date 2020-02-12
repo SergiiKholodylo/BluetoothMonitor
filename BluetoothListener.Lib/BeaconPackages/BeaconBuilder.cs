@@ -4,7 +4,7 @@ using BluetoothListener.Lib.BluetoothAdvertisement;
 namespace BluetoothListener.Lib.BeaconPackages
 {
     
-    public class BeaconBuilder
+    public static class BeaconBuilder
     {
 
         public static IBluetoothBeacon CreateBeaconDeviceFromBleAdvertisement(IBluetoothAdvertisementPackage eventArgs)

@@ -26,7 +26,7 @@ namespace BluetoothMonitor.UWP
             this.InitializeComponent();
             var dispatcher = Window.Current.Dispatcher;
             Data = new ViewData();
-            _listener = new BluetoothListenerManager(Data, dispatcher);
+            _listener = new BluetoothListenerManager(Data, dispatcher, new BeaconCache());
             DataContext = Data;
         }
 

@@ -17,11 +17,13 @@ namespace BluetoothListener.Lib
 
 
         private static bool _isBusy;
+        private IBeaconCache _cache;
 
-        public BluetoothListenerManager(IViewData data, CoreDispatcher dispatcher)
+        public BluetoothListenerManager(IViewData data, CoreDispatcher dispatcher, IBeaconCache cache)
         {
             _data = data;
             _dispatcher = dispatcher;
+            _cache = cache;
             _bluetoothDevice = new BluetoothReceiver();
             //_bluetoothDevice.AdvertisementReceived += PackageReceived;
             _isActive = false;
@@ -31,11 +33,11 @@ namespace BluetoothListener.Lib
         {
             try
             {
-                await RunWithDispatcher(() => { _data.Received++; });
+                //await RunWithDispatcher(() => { _data.Received++; });
             
                 if (_isBusy)
                 {
-                    await RunWithDispatcher(() => { _data.Dropped++; });
+                    //await RunWithDispatcher(() => { _data.Dropped++; });
                 
                     Debug.WriteLine($"A Package was Dropped {_data.Dropped} from {_data.Received} ({_data.Dropped * 100.0 / (1.0 * _data.Received) }%)");
                     return;
@@ -47,7 +49,11 @@ namespace BluetoothListener.Lib
 
                 if (beacon.RssiOutOfRange()) return;
 
-                InsertOrReplaceBeaconInCollection(beacon);
+                Debug.WriteLine(beacon);
+
+                _cache.AddOrUpdate(beacon);
+
+                //InsertOrReplaceBeaconInCollection(beacon);
             }
             catch (Exception e)
             {
@@ -126,6 +132,7 @@ namespace BluetoothListener.Lib
             {
                 _data.Mode = "Stopped";
             });
+            _cache.Clear();
             GC.Collect();
         }
     }
