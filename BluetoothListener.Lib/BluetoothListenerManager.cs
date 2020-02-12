@@ -107,7 +107,7 @@ namespace BluetoothListener.Lib
         {
             if(_isActive) return;
             _isActive = true;
-            //_bluetoothDevice.AdvertisementReceived += PackageReceived;
+            _bluetoothDevice.AdvertisementReceived += PackageReceived;
             await RunWithDispatcher(() =>
             {
                 _data.ClearData();
@@ -120,7 +120,7 @@ namespace BluetoothListener.Lib
         {
             if (! _isActive) return;
             _isActive = false;
-            //_bluetoothDevice.AdvertisementReceived -= PackageReceived;
+            _bluetoothDevice.AdvertisementReceived -= PackageReceived;
             _bluetoothDevice.StopListening();
             await RunWithDispatcher(() =>
             {
